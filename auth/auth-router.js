@@ -5,11 +5,16 @@ const Users = require("../users/users-model.js");
 const secrets = require("../config/secret");
 
 router.post("/register", (req, res) => {
-  let user = req.body;
+  const { username, password, department } = req.body;
   const hash = bcrypt.hashSync(user.password, 10);
-  user.password = hash;
 
-  Users.add(user)
+  const newUser = {
+    username,
+    password: hash,
+    department
+  };
+
+  Users.add(newUser)
     .then(saved => {
       res.status(201).json(saved);
     })
@@ -42,7 +47,8 @@ router.post("/login", (req, res) => {
 function generateToken(user) {
   const payload = {
     subject: user.id,
-    username: user.username
+    username: user.username,
+    department: user.department
   };
 
   const options = {
